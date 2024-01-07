@@ -79,19 +79,16 @@ class Board {
 
     public static void main(String[] args) throws IOException {
         Board board = new Board("src/Board.txt");
-        System.out.println("Original Board:");
-        board.printBoard();
+       // System.out.println("Original Board:");
+        //board.printBoard();
 
-        System.out.println("\nRotated Board (45 degrees):");
-        board.printRotatedBoard();
-        Player player = new Player("human");
-        int result;
-        int numOfTrials = 0;
-        do {
-            result = player.Toss();
-            numOfTrials++;
-        } while (result != 1 && result != 5);
+      //  System.out.println("\nRotated Board (45 degrees):");
+      //  board.printRotatedBoard();
+        ArrayList<Cell> humanPath = Path.createHumanPath();
+        Player humanPlayer = new Player("human", humanPath);
+        Player computerPlayer = new Player("computer", humanPath);
 
-        System.out.println("got " + result + " in " + numOfTrials + " tries!");
+       System.out.println(humanPlayer.Toss());
+
     }
 }

@@ -2,10 +2,11 @@ public class CustomProbabilityCoinTossSimulator {
 
     public static void main(String[] args) {
         int numTrials = 6;
-        double probabilityOfHeads = 0.5; // Customize this based on your desired probability
+        double probabilityOfHeads = 0.4; // Customize this based on your desired probability
         // Specify the probabilities for each outcome
         for (int i = 0; i <= numTrials; i++) {
             double probability = calculateBinomialProbability(numTrials, i, probabilityOfHeads);
+            probability = roundToSecondDecimal(probability);
             probability*=100;
             System.out.println("Exactly " + i + " head(s): " + probability);
         }
@@ -41,5 +42,8 @@ public class CustomProbabilityCoinTossSimulator {
         }
 
         return dp[n][k];
+    }
+    public static double roundToSecondDecimal(double value) {
+        return Math.round(value * 1000.0) / 1000.0;
     }
 }
