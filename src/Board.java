@@ -1,94 +1,78 @@
-import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-class Board {
-    private final int numRows;
-    private final  int numCols;
-    private final char[][] board;
-    public static final char SAFE_ZONE_CELL = 'X';
-    public static final char EMPTY_CELL = '_';
-    public static final char BORDER_CELL = '#';
+public class Board {
+    Player player1, player2;
 
+    public Board(String player1Type, String player2Type){
+        // Create players
+        this.player1 = new Player(player1Type);
+        this.player2 = new Player(player2Type);
 
-    // constructors
-    // the initialization of the board
-    public Board(String filename) throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader(filename));
-        List<String> lines = new ArrayList<>();
-        String line;
-        while ((line = br.readLine()) != null) {
-            lines.add(line);
-        }
-        br.close();
+        // Create paths
+        ArrayList<Cell> path1 = Path.createFirstPath();
+        ArrayList<Cell> path2 = Path.createSecondPath(path1);
 
-        numRows = lines.size();
-        numCols = lines.get(0).length();
-        board = new char[numRows][numCols];
-
-
-        for (int i = 0; i < numRows; i++) {
-            String row = lines.get(i);
-            for (int j = 0; j < numCols; j++) {
-                board[i][j] = row.charAt(j);
-            }
-        }
-    }
-    // Print the board
-    public void printBoard() {
-        for (char[] row : board) {
-            for (char cell : row) {
-                System.out.print(cell + "  ");
-            }
-            System.out.println();
-        }
+        // Assign paths to players
+        player1.setPath(path1);
+        player2.setPath(path2);
     }
 
-    public void printRotatedBoard() {
-        // Counter Variable
-        int counter = 0;
+    public boolean isFinished() {
+        return isWin(player1) | isWin(player2);
+    }
 
-        while (counter < 2 * numRows - 1) {
-            // Print leading spaces
-            for (int i = 0; i < Math.abs(numRows - counter - 1); i++) {
-                System.out.print(" ");
+    public boolean isWin(Player player){
+        ArrayList<Pawn> pawns = player.getPawns();
+
+        for(Pawn pawn : pawns){
+            if(pawn.getStatus() != Pawn.GameStatus.IN_KITCHEN){
+                return false;
             }
+        }
+        return true;
+    }
 
-            Vector<Character> diagonalElements = new Vector<>();
+    public ArrayList<Integer> validPawnList(TossResult tossResult, ArrayList<Pawn> pawns){
+        ArrayList<Integer> validPawns = new ArrayList<>();
 
-            // Iterate over columns
-            for (int col = 0; col < numCols; col++) {
-                // Iterate over rows
-                for (int row = 0; row < numRows; row++) {
-                    // Check if the element is on the diagonal
-                    if (col + row == counter) {
-                        diagonalElements.add(board[row][col]);
-                    }
+        // check for Khal
+        if(tossResult.getIsKhal()){
+            for(Pawn pawn : pawns){
+                if(pawn.getStatus() == Pawn.GameStatus.OUT_GAME) {
+                    validPawns.add(pawn.getNumber());
                 }
             }
-
-            // Print reversed diagonal elements
-            for (int i = diagonalElements.size() - 1; i >= 0; i--) {
-                System.out.print(diagonalElements.get(i) + " ");
-            }
-
-            System.out.println();
-            counter += 1;
         }
+
+        // check for steps
+        if(tossResult.getSteps() > 0){
+            for(Pawn pawn : pawns){
+                if(pawn.getStatus() == Pawn.GameStatus.IN_GAME)
+                    validPawns.add(pawn.getNumber());
+            }
+        }
+
+        return validPawns;
     }
 
+    public void move(Player player, Pawn pawn, TossResult tossResult) {
+        int steps = tossResult.getSteps();
+        // check for Khal
+        if(tossResult.getIsKhal() && pawn.getStatus() == Pawn.GameStatus.OUT_GAME){
+            pawn.setStatus(Pawn.GameStatus.IN_GAME);
+            pawn.setLocationIndex(0);
+            player.addPawnToPath(0, pawn);
+            return;
+        }
 
-    public static void main(String[] args) throws IOException {
-        Board board = new Board("src/Board.txt");
-       // System.out.println("Original Board:");
-        //board.printBoard();
+        player.addPawnToPath(steps, pawn);
 
-      //  System.out.println("\nRotated Board (45 degrees):");
-      //  board.printRotatedBoard();
-        ArrayList<Cell> humanPath = Path.createHumanPath();
-        Player humanPlayer = new Player("human", humanPath);
-        Player computerPlayer = new Player("computer", humanPath);
+        // should check for errors like when the steps go out of all cells
+    }
 
-       System.out.println(humanPlayer.Toss());
-
+    public void printInfo() {
+        player1.getPawnsStatus();
+        player2.getPawnsStatus();
     }
 }
