@@ -12,14 +12,14 @@ public class Pawn {
         this.status = status;
     }
 
-    public enum GameStatus {
+    public enum PawnStatus {
         IN_GAME,
         OUT_GAME,
         IN_KITCHEN
     }
 
     // Getter and setter for status
-    public GameStatus getStatus() {
+    public PawnStatus getStatus() {
         return status;
     }
 
@@ -29,7 +29,7 @@ public class Pawn {
 
     public int getNumber(){return number;}
 
-    public void setStatus(GameStatus status) {
+    public void setStatus(PawnStatus  status) {
         this.status = status;
     }
 

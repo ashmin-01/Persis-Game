@@ -31,7 +31,7 @@ public class Game {
                 // choose pawn
                 int pawnIndex = choosePawn(validPawns);
                 Pawn p = player.getPawns().get(pawnIndex - 1);
-                Pawn.GameStatus pStatus = p.getStatus();
+                Pawn.PawnStatus pStatus = p.getStatus();
 
                 // make the move
                 board.move(player, p, tossResults.get(resultIndex));

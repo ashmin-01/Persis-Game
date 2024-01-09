@@ -59,8 +59,8 @@ public class Board {
     public void move(Player player, Pawn pawn, TossResult tossResult) {
         int steps = tossResult.getSteps();
         // check for Khal
-        if(tossResult.getIsKhal() && pawn.getStatus() == Pawn.GameStatus.OUT_GAME){
-            pawn.setStatus(Pawn.GameStatus.IN_GAME);
+        if(tossResult.getIsKhal() && pawn.getStatus() == Pawn.PawnStatus.OUT_GAME){
+            pawn.setStatus(Pawn.PawnStatus.IN_GAME);
             pawn.setLocationIndex(0);
             player.addPawnToPath(0, pawn);
             return;
