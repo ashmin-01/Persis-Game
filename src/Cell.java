@@ -4,6 +4,7 @@ public class Cell {
     private int label;
     private boolean isProtected;
     private ArrayList<Pawn> pawns = new ArrayList<>();
+    private ArrayList<Player> players = new ArrayList<>();
 
     public Cell(int label) {
         this.label = label;
@@ -20,16 +21,41 @@ public class Cell {
         return false;
     }
 
-    public void addPawnToCell(Pawn pawn){
+    public void addPawnToCell(Pawn pawn, Player player) {
         pawns.add(pawn);
+        if (!players.contains(player)) {
+            players.add(player);
+        }
     }
 
-    public void removePawnFromCell(Pawn pawn){
+    public void removePawnFromCell(Pawn pawn) {
         pawns.remove(pawn);
+        // Optionally, remove the player from the list if no pawns remain for that player
+        players.removeIf(player -> !pawns.stream().anyMatch(p -> p.getPlayer().equals(player)));
     }
 
-    public boolean getProtected() {
+    public boolean hasPawnsFromDifferentPlayers() {
+        return players.size() > 1;
+    }
+
+    public boolean isProtected() {
         return isProtected;
+    }
+
+    public ArrayList<Pawn> getPawns() {
+        return pawns;
+    }
+
+    public ArrayList<Pawn> getPlayerPawnsOnCell(Player player) {
+        ArrayList<Pawn> playerPawnsOnCell = new ArrayList<>();
+
+        for (Pawn pawn : pawns) {
+            if (pawn.getPlayer().equals(player)) {
+                playerPawnsOnCell.add(pawn);
+            }
+        }
+
+        return playerPawnsOnCell;
     }
 
     @Override
@@ -37,6 +63,7 @@ public class Cell {
         return "Cell{" +
                 "label=" + label +
                 ", isProtected=" + isProtected +
+                ", pawns=" + pawns +
                 '}';
     }
 }

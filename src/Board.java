@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Board {
     Player player1, player2;
@@ -8,6 +9,9 @@ public class Board {
         // Create players
         this.player1 = new Player(player1Type);
         this.player2 = new Player(player2Type);
+
+        player1.setOpponent(player2);
+        player2.setOpponent(player1);
 
         // Create paths
         ArrayList<Cell> path1 = Path.createFirstPath();
@@ -56,20 +60,57 @@ public class Board {
         return validPawns;
     }
 
-    public void move(Player player, Pawn pawn, TossResult tossResult) {
-        int steps = tossResult.getSteps();
-        // check for Khal
-        if(tossResult.getIsKhal() && pawn.getStatus() == Pawn.GameStatus.OUT_GAME){
-            pawn.setStatus(Pawn.GameStatus.IN_GAME);
-            pawn.setLocationIndex(0);
-            player.addPawnToPath(0, pawn);
+    public void move(Player player, Pawn pawn, TossResult tossResult, int steps) {
+
+        // Check if the player toss result is bigger than the remaining spots
+        int remainingSpots = player.getPath().size() - pawn.getLocationIndex();
+        if (steps > remainingSpots) {
+            System.out.println("Cannot move. Skip till next turn.");
+            return;
+        } else if (steps == remainingSpots)
+        {
+            System.out.println("Congrats your pawn has entered the kitchen!");
+            pawn.setStatus(Pawn.GameStatus.IN_KITCHEN);
+            Cell cell = pawn.getCell();
+            cell.removePawnFromCell(pawn);
             return;
         }
+        // check for Khal
+        if (tossResult.getIsKhal() && pawn.getStatus() == Pawn.GameStatus.OUT_GAME) {
+            pawn.setStatus(Pawn.GameStatus.IN_GAME);
+            pawn.setLocationIndex(0);
+            player.addPawnToPath(0, pawn, player);
+        } else {
+            player.addPawnToPath(steps, pawn, player);
 
-        player.addPawnToPath(steps, pawn);
-
-        // should check for errors like when the steps go out of all cells
+            // after moving the pawn to the new location, check if it can kill an opponent's pawn
+            if (canKill(pawn)) {
+                killOpponentPawn(player, pawn);
+            }
+        }
     }
+
+    public boolean canKill(Pawn pawn){
+        Cell currentCell = pawn.getCell();
+         if(!currentCell.isProtected() && currentCell.hasPawnsFromDifferentPlayers()){
+             return true;
+         }
+        return false;
+    }
+
+    public void killOpponentPawn(Player player, Pawn pawn) {
+        Player opponent = player.getOpponent();
+        Cell currentCell = pawn.getCell();
+
+        ArrayList<Pawn> enemyPawns = currentCell.getPlayerPawnsOnCell(opponent);
+        for(Pawn pawnToKill : enemyPawns){
+            currentCell.removePawnFromCell(pawnToKill);
+            pawnToKill.setStatus(Pawn.GameStatus.OUT_GAME);
+        }
+
+            System.out.println("You killed enemy pawn(s)!");
+        }
+
 
     public void printInfo() {
         player1.getPawnsStatus();
