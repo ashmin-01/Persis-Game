@@ -24,8 +24,10 @@ public class Game {
             // choose valid pawn for result
             ArrayList<Integer> validPawns = board.validPawnList(result, player.getPawns());
 
+            // clear toss results since there are no pawns to move
             if (validPawns.isEmpty()){
-                tossResults.remove(resultIndex);
+                System.out.println("There are no pawns you can move.");
+                tossResults.clear();
             }
             else {
                 // choose pawn
@@ -33,18 +35,63 @@ public class Game {
                 Pawn p = player.getPawns().get(pawnIndex - 1);
                 Pawn.PawnStatus pStatus = p.getStatus();
 
-                // make the move
-                board.move(player, p, tossResults.get(resultIndex));
 
-                // remove result | remove just khal or steps
-                if (result.getIsKhal() && pStatus == Pawn.GameStatus.OUT_GAME)
+                // check if it can move this particular pawn :
+                int steps = tossResults.get(resultIndex).getSteps();
+                if(result.getIsKhal() && pStatus == Pawn.GameStatus.OUT_GAME){
+                    board.move(player, p, tossResults.get(resultIndex), steps);
                     result.setIsKhal(false);
-                else if (result.getIsKhal() && p.getStatus() == Pawn.GameStatus.IN_GAME)
-                    result.setSteps(0);
-                else
+                }else if (!result.getIsKhal()) {
+                    board.move(player, p, tossResults.get(resultIndex), steps);
                     tossResults.remove(resultIndex);
+                } else
+                {
+                    steps = handleKhalCases(p, tossResults,resultIndex);
+                    board.move(player, p, tossResults.get(resultIndex), steps);
+                }
             }
         }
+    }
+
+    public int handleKhalCases(Pawn pawn,ArrayList<TossResult> tossResults, int resultIndex){
+        TossResult result = tossResults.get(resultIndex);
+        int steps = tossResults.get(resultIndex).getSteps();
+        if (result.getIsKhal() && pawn.getStatus() == Pawn.GameStatus.IN_GAME){
+            Scanner scanner = new Scanner(System.in);
+            boolean validChoice = false;
+            while (!validChoice) {
+                System.out.println("Choose one of the following:\n" +
+                        "1. Move the pawn one step only (Khal)\n" +
+                        "2. Move the pawn " + result.getSteps() + " steps and keep the Khal\n" +
+                        "3. Move the pawn " + (result.getSteps() + 1) + " steps and (use the Khal)\n");
+               int choice = scanner.nextInt();
+
+                switch (choice) {
+                    case 1:
+                        result.setIsKhal(false);
+                        steps = 1;
+                        validChoice = true;
+                        break;
+                    case 2:
+                        result.setSteps(0);
+                        steps = tossResults.get(resultIndex).getSteps();
+                        validChoice = true;
+                        break;
+                    case 3:
+                        result.setIsKhal(false);
+                        result.setSteps(0);
+                        steps = (tossResults.get(resultIndex).getSteps() + 1);
+                        tossResults.remove(resultIndex);
+                        validChoice = true;
+                        break;
+                    default:
+                        System.out.println("Invalid choice. Please try again.");
+                        break;
+                }
+            }
+        }
+
+        return steps;
     }
 
     private int choosePawn(ArrayList<Integer> validPawnList) {
@@ -99,8 +146,6 @@ public class Game {
         }
         return choice;
     }
-
-
 
     private void computerTurn(Player player){
         System.out.println("Computer Turn");

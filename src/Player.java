@@ -5,6 +5,8 @@ public class Player {
     private int numOfPawns = 4;
     private ArrayList<Pawn> pawns;
     private ArrayList<Cell> path = new ArrayList<>();
+    private Player opponent;
+
 
     public Player(String type) {
         // Set type and pawns for Human
@@ -12,7 +14,7 @@ public class Player {
             this.type = "Human";
             this.pawns = new ArrayList<>();
             for(int i = 1; i <= numOfPawns; i++)
-                pawns.add(new Pawn(i, "H" + i, Pawn.GameStatus.OUT_GAME));
+                pawns.add(new Pawn(i, "H" + i, Pawn.GameStatus.OUT_GAME, this));
         }
 
         // Set type and pawns for Computer
@@ -20,7 +22,7 @@ public class Player {
             this.type = "Computer";
             this.pawns = new ArrayList<>();
             for(int i = 1; i <= numOfPawns; i++)
-                pawns.add(new Pawn(i, "C" + i, Pawn.GameStatus.OUT_GAME));
+                pawns.add(new Pawn(i, "C" + i, Pawn.GameStatus.OUT_GAME, this));
         } else {
             throw new IllegalArgumentException("Invalid player type: " + type);
         }
@@ -69,7 +71,15 @@ public class Player {
         return pawns;
     }
 
-    public void addPawnToPath(int steps, Pawn pawn){
+    public void setOpponent(Player opponent) {
+        this.opponent = opponent;
+    }
+
+    public Player getOpponent() {
+        return opponent;
+    }
+
+    public void addPawnToPath(int steps, Pawn pawn, Player player){
 
         // Get original location and remove it from it
         int originalIndex = pawn.getLocationIndex();
@@ -80,6 +90,7 @@ public class Player {
         int newIndex = originalIndex + steps;
         pawn.setLocationIndex(newIndex);
         Cell newCell = path.get(newIndex);
-        newCell.addPawnToCell(pawn);
+        newCell.addPawnToCell(pawn,player);
     }
+
 }
