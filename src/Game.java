@@ -11,93 +11,33 @@ public class Game {
     }
 
     private void humanTurn(Player player){
-        System.out.println("\nHuman Turn");
         // Tossing
-        ArrayList<TossResult> tossResults = TossShells.tossShells();
+        ArrayList<Integer> stepsList = TossShells.tossShells();
+        ArrayList<Pawn> pawns = player.getPawns();
 
-        // choosing a toss result until results is empty
-        while (!tossResults.isEmpty()) {
-            // choose result
-            int resultIndex = chooseTossResult(tossResults);
-            TossResult result = tossResults.get(resultIndex);
+        while (!stepsList.isEmpty()) {
+            ArrayList<Move> validMoves = board.validMoves(stepsList, pawns);
 
-            // choose valid pawn for result
-            ArrayList<Integer> validPawns = board.validPawnList(result, player.getPawns());
-
-            // clear toss results since there are no pawns to move
-            if (validPawns.isEmpty()){
-                System.out.println("There are no pawns you can move.");
-                tossResults.clear();
+            if(!validMoves.isEmpty()){
+                // choose a move index
+                int moveIndex = chooseMove(validMoves);
+                Move choosenMove = validMoves.get(moveIndex);
+                // move the pawn
+                board.move(player, choosenMove.getPawn(), choosenMove.getSteps());
+                // remove from stepList
+                int stepIndex = choosenMove.getStepIndex();
+                stepsList.remove(stepIndex);
             }
-            else {
-                // choose pawn
-                int pawnIndex = choosePawn(validPawns);
-                Pawn p = player.getPawns().get(pawnIndex - 1);
-                Pawn.PawnStatus pStatus = p.getStatus();
-
-
-                // check if it can move this particular pawn :
-                int steps = tossResults.get(resultIndex).getSteps();
-                if(result.getIsKhal() && pStatus == Pawn.GameStatus.OUT_GAME){
-                    board.move(player, p, tossResults.get(resultIndex), steps);
-                    result.setIsKhal(false);
-                }else if (!result.getIsKhal()) {
-                    board.move(player, p, tossResults.get(resultIndex), steps);
-                    tossResults.remove(resultIndex);
-                } else
-                {
-                    steps = handleKhalCases(p, tossResults,resultIndex);
-                    board.move(player, p, tossResults.get(resultIndex), steps);
-                }
+            else{
+                return;
             }
         }
     }
 
-    public int handleKhalCases(Pawn pawn,ArrayList<TossResult> tossResults, int resultIndex){
-        TossResult result = tossResults.get(resultIndex);
-        int steps = tossResults.get(resultIndex).getSteps();
-        if (result.getIsKhal() && pawn.getStatus() == Pawn.GameStatus.IN_GAME){
-            Scanner scanner = new Scanner(System.in);
-            boolean validChoice = false;
-            while (!validChoice) {
-                System.out.println("Choose one of the following:\n" +
-                        "1. Move the pawn one step only (Khal)\n" +
-                        "2. Move the pawn " + result.getSteps() + " steps and keep the Khal\n" +
-                        "3. Move the pawn " + (result.getSteps() + 1) + " steps and (use the Khal)\n");
-               int choice = scanner.nextInt();
-
-                switch (choice) {
-                    case 1:
-                        result.setIsKhal(false);
-                        steps = 1;
-                        validChoice = true;
-                        break;
-                    case 2:
-                        result.setSteps(0);
-                        steps = tossResults.get(resultIndex).getSteps();
-                        validChoice = true;
-                        break;
-                    case 3:
-                        result.setIsKhal(false);
-                        result.setSteps(0);
-                        steps = (tossResults.get(resultIndex).getSteps() + 1);
-                        tossResults.remove(resultIndex);
-                        validChoice = true;
-                        break;
-                    default:
-                        System.out.println("Invalid choice. Please try again.");
-                        break;
-                }
-            }
-        }
-
-        return steps;
-    }
-
-    private int choosePawn(ArrayList<Integer> validPawnList) {
-        System.out.print("Choose pawn number: ");
-        for(int i : validPawnList){
-            System.out.print(i + ", ");
+    private int chooseMove(ArrayList<Move> validMoves){
+        System.out.println("Choose a move: ");
+        for(int i = 0; i < validMoves.size(); i++){
+            System.out.println(i + ": " + validMoves.get(i));
         }
         Scanner scanner = new Scanner(System.in);
         int choice = -1;
@@ -106,41 +46,13 @@ public class Game {
         while (!valid) {
             try {
                 choice = scanner.nextInt();
-                if (validPawnList.contains(choice)) {
-                    valid = true;
+                if (choice >= 0 && choice < validMoves.size()) { // Check if the choice is within the range of valid moves
+                    valid = true; // Set the valid flag to true
                 } else {
-                    System.out.println("Invalid choice. Please enter a valid pawn number.");
+                    System.out.println("Invalid choice. Please enter a number between 0 and " + (validMoves.size() - 1));
                 }
             } catch (Exception e) {
                 System.out.println("Invalid input. Please enter a number.");
-                scanner.next();
-            }
-        }
-        return choice;
-    }
-
-    private int chooseTossResult(ArrayList<TossResult> results){
-        // print all toss result
-        for(int i=0; i< results.size(); i++){
-            TossResult result = results.get(i);
-            System.out.println("result" + i + ": " + result.toString());
-        }
-
-        // Get the result index from the user
-        System.out.print("Choose toss result: ");
-        Scanner scanner = new Scanner(System.in); // Create a Scanner object
-        int choice = -1; // Initialize the choice variable
-        boolean valid = false; // Initialize the valid flag
-        while (!valid) { // Loop until a valid input is entered
-            try {
-                choice = scanner.nextInt(); // Read an integer input
-                if (choice >= 0 && choice < results.size()) { // Check if the choice is within the range of the results
-                    valid = true; // Set the valid flag to true
-                } else {
-                    System.out.println("Invalid choice. Please enter a number between 0 and " + (results.size() - 1)); // Print an error message
-                }
-            } catch (Exception e) {
-                System.out.println("Invalid input. Please enter a number."); // Print an error message
                 scanner.next(); // Clear the input buffer
             }
         }
@@ -157,6 +69,7 @@ public class Game {
             board.printInfo();
 
             // player1
+            System.out.println("\nPlayer1");
             humanTurn(board.player1);
             if (board.isWin(board.player1)) {
                 System.out.println("Congratulations you won :'(");
@@ -165,6 +78,7 @@ public class Game {
             board.printInfo();
 
             // player2
+            System.out.println("\nPlayer2");
             humanTurn(board.player2);
             if (board.isWin(board.player2)) {
                 System.out.println("Congratulations you won :'(");

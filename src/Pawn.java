@@ -3,12 +3,12 @@ import java.util.ArrayList;
 public class Pawn {
     private int number;
     private String name;
-    private GameStatus status;
+    private PawnStatus status;
     private int locationIndex;
     private Player player;
 
     // Constructor
-    public Pawn(int number, String name, GameStatus status,Player player) {
+    public Pawn(int number, String name, PawnStatus status,Player player) {
         this.number = number;
         this.name = name;
         this.status = status;

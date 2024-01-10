@@ -30,37 +30,34 @@ public class Board {
         ArrayList<Pawn> pawns = player.getPawns();
 
         for(Pawn pawn : pawns){
-            if(pawn.getStatus() != Pawn.GameStatus.IN_KITCHEN){
+            if(pawn.getStatus() != Pawn.PawnStatus.IN_KITCHEN){
                 return false;
             }
         }
         return true;
     }
 
-    public ArrayList<Integer> validPawnList(TossResult tossResult, ArrayList<Pawn> pawns){
-        ArrayList<Integer> validPawns = new ArrayList<>();
+    public ArrayList<Move> validMoves(ArrayList<Integer> stepsList, ArrayList<Pawn> pawns){
+        ArrayList<Move> allMoves = new ArrayList<>();
+        Move move;
 
-        // check for Khal
-        if(tossResult.getIsKhal()){
+        for (int i = 0; i < stepsList.size(); i++){
             for(Pawn pawn : pawns){
-                if(pawn.getStatus() == Pawn.GameStatus.OUT_GAME) {
-                    validPawns.add(pawn.getNumber());
+                // 0 steps for khal
+                if(stepsList.get(i) == 1 && pawn.getStatus() == Pawn.PawnStatus.OUT_GAME) {
+                    move = new Move(pawn, 0, i);
+                    allMoves.add(move);
+                }
+                else if(pawn.getStatus() == Pawn.PawnStatus.IN_GAME){
+                    move = new Move(pawn, stepsList.get(i), i);
+                    allMoves.add(move);
                 }
             }
         }
-
-        // check for steps
-        if(tossResult.getSteps() > 0){
-            for(Pawn pawn : pawns){
-                if(pawn.getStatus() == Pawn.GameStatus.IN_GAME)
-                    validPawns.add(pawn.getNumber());
-            }
-        }
-
-        return validPawns;
+        return allMoves;
     }
 
-    public void move(Player player, Pawn pawn, TossResult tossResult, int steps) {
+    public void move(Player player, Pawn pawn, int steps) {
 
         // Check if the player toss result is bigger than the remaining spots
         int remainingSpots = player.getPath().size() - pawn.getLocationIndex();
@@ -70,14 +67,14 @@ public class Board {
         } else if (steps == remainingSpots)
         {
             System.out.println("Congrats your pawn has entered the kitchen!");
-            pawn.setStatus(Pawn.GameStatus.IN_KITCHEN);
+            pawn.setStatus(Pawn.PawnStatus.IN_KITCHEN);
             Cell cell = pawn.getCell();
             cell.removePawnFromCell(pawn);
             return;
         }
         // check for Khal
-        if (tossResult.getIsKhal() && pawn.getStatus() == Pawn.GameStatus.OUT_GAME) {
-            pawn.setStatus(Pawn.GameStatus.IN_GAME);
+        if (steps == 0 && pawn.getStatus() == Pawn.PawnStatus.OUT_GAME) {
+            pawn.setStatus(Pawn.PawnStatus.IN_GAME);
             pawn.setLocationIndex(0);
             player.addPawnToPath(0, pawn, player);
         } else {
@@ -105,13 +102,12 @@ public class Board {
         ArrayList<Pawn> enemyPawns = currentCell.getPlayerPawnsOnCell(opponent);
         for(Pawn pawnToKill : enemyPawns){
             currentCell.removePawnFromCell(pawnToKill);
-            pawnToKill.setStatus(Pawn.GameStatus.OUT_GAME);
+            pawnToKill.setStatus(Pawn.PawnStatus.OUT_GAME);
         }
 
             System.out.println("You killed enemy pawn(s)!");
-        }
-
-
+    }
+    
     public void printInfo() {
         player1.getPawnsStatus();
         player2.getPawnsStatus();

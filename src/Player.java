@@ -14,7 +14,7 @@ public class Player {
             this.type = "Human";
             this.pawns = new ArrayList<>();
             for(int i = 1; i <= numOfPawns; i++)
-                pawns.add(new Pawn(i, "H" + i, Pawn.GameStatus.OUT_GAME, this));
+                pawns.add(new Pawn(i, "H" + i, Pawn.PawnStatus.OUT_GAME, this));
         }
 
         // Set type and pawns for Computer
@@ -22,7 +22,7 @@ public class Player {
             this.type = "Computer";
             this.pawns = new ArrayList<>();
             for(int i = 1; i <= numOfPawns; i++)
-                pawns.add(new Pawn(i, "C" + i, Pawn.GameStatus.OUT_GAME, this));
+                pawns.add(new Pawn(i, "C" + i, Pawn.PawnStatus.OUT_GAME, this));
         } else {
             throw new IllegalArgumentException("Invalid player type: " + type);
         }
