@@ -59,11 +59,22 @@ public class Cell {
     }
 
     @Override
-    public String toString() {
-        return "Cell{" +
-                "label=" + label +
-                ", isProtected=" + isProtected +
-                ", pawns=" + pawns +
-                '}';
+    public String toString(){
+        String s = "[";
+        for (Pawn pawn : pawns){
+            s += pawn.getName();
+        }
+        s += "]";
+        return s;
     }
+
+//    public String toString() {
+//        return "Cell{" +
+//                "label=" + label +
+//                ", isProtected=" + isProtected +
+//                ", pawns=" + pawns +
+//                '}';
+//    }
+
+
 }

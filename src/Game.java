@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class Game {
@@ -29,6 +28,7 @@ public class Game {
                 stepsList.remove(stepIndex);
             }
             else{
+                System.out.println("No valid moves!!!");
                 return;
             }
         }
@@ -60,36 +60,38 @@ public class Game {
     }
 
     private void computerTurn(Player player){
-        System.out.println("Computer Turn");
+
     }
 
     private void play(){
         while (true) {
             // show board
             board.printInfo();
+            board.printBoard();
 
             // player1
-            System.out.println("\nPlayer1");
+            System.out.println("\nPlayer1 Human Turn");
             humanTurn(board.player1);
             if (board.isWin(board.player1)) {
                 System.out.println("Congratulations you won :'(");
                 break;
             }
             board.printInfo();
+            board.printBoard();
 
             // player2
-            System.out.println("\nPlayer2");
+            System.out.println("\nPlayer2 Computer Turn");
             humanTurn(board.player2);
             if (board.isWin(board.player2)) {
                 System.out.println("Congratulations you won :'(");
                 break;
             }
-
+            System.out.println();
         }
     }
 
     public static void main(String[] args) {
-        Game game = new Game("human", "human");
+        Game game = new Game("human", "Computer");
         game.play();
     }
 

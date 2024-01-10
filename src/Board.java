@@ -4,6 +4,8 @@ import java.util.Scanner;
 
 public class Board {
     Player player1, player2;
+    ArrayList<Cell> path1, path2;
+
 
     public Board(String player1Type, String player2Type){
         // Create players
@@ -14,8 +16,8 @@ public class Board {
         player2.setOpponent(player1);
 
         // Create paths
-        ArrayList<Cell> path1 = Path.createFirstPath();
-        ArrayList<Cell> path2 = Path.createSecondPath(path1);
+        this.path1 = Path.createFirstPath();
+        this.path2 = Path.createSecondPath(path1);
 
         // Assign paths to players
         player1.setPath(path1);
@@ -111,5 +113,103 @@ public class Board {
     public void printInfo() {
         player1.getPawnsStatus();
         player2.getPawnsStatus();
+    }
+
+    public void printBoard(){
+        // board is divided into 3 blocks
+        firstBlock();
+        secondBlock();
+        thirdBlock();
+    }
+
+    public void firstBlock(){
+        Cell currentCell;
+        int x=8 ,y=7, z=74;
+        for(int j = 0; j < 8; j++){
+            for(int i = 0; i < 19; i++){
+                if(i==8){
+                    currentCell = path1.get(x);
+                    System.out.print(currentCell);
+                }
+                else if(i==9) {
+                    currentCell = path1.get(y);
+                    System.out.print(currentCell);
+                }
+                else if(i==10) {
+                    currentCell = path1.get(z);
+                    System.out.print(currentCell);
+                }
+                else{
+                    System.out.print("  ");
+                }
+            }
+            x++; y--; z--;
+            System.out.println();
+        }
+    }
+
+    public void secondBlock(){
+        Cell currentCell;
+        // first line
+        int x=23;
+        for(int i=0; i<19; i++) {
+            if (i == 8 || i == 9 || i == 10) {
+                System.out.print("  ");
+                x = 66;
+            } else {
+                currentCell = path1.get(x);
+                System.out.print(currentCell);
+                x--;
+            }
+        }
+        System.out.println();
+        // second line
+        currentCell = path1.get(24);
+        System.out.print(currentCell);
+        for(int i=0; i<17; i++){
+            System.out.print("  ");
+        }
+        currentCell = path1.get(58);
+        System.out.print(currentCell);
+        System.out.println();
+        // third line
+        int y = 25;
+        for(int i=0; i<19; i++) {
+            if (i == 8 || i == 9 || i == 10) {
+                System.out.print("  ");
+                y = 50;
+            } else {
+                currentCell = path1.get(y);
+                System.out.print(currentCell);
+                y++;
+            }
+        }
+        System.out.println();
+    }
+
+    public void thirdBlock(){
+        Cell currentCell;
+        int x=33 ,y=0, z=49;
+        for(int j = 0; j < 8; j++){
+            for(int i = 0; i < 19; i++){
+                if(i==8){
+                    currentCell = path1.get(x);
+                    System.out.print(currentCell);
+                }
+                else if(i==9) {
+                    currentCell = path2.get(y);
+                    System.out.print(currentCell);
+                }
+                else if(i==10) {
+                    currentCell = path1.get(z);
+                    System.out.print(currentCell);
+                }
+                else{
+                    System.out.print("  ");
+                }
+            }
+            x++; y++; z--;
+            System.out.println();
+        }
     }
 }

@@ -17,10 +17,14 @@ class Path {
         // Add the cell labeled 1 again
         firstPath.add(firstPath.get(7));
 
-        // Create another 7 cells labeled as 0
-        for (int i = 0; i < 7; i++) {
-            firstPath.add(new Cell(0));
-        }
+        // Add same first 7 cells to the end of the path
+        firstPath.addAll(firstPath.subList(0, 7));
+
+//        // Create another 7 cells labeled as 0
+//        for (int i = 0; i < 7; i++) {
+//            firstPath.add(new Cell(0));
+//        }
+
 
         return firstPath;
     }
@@ -28,22 +32,23 @@ class Path {
     public static ArrayList<Cell> createSecondPath(ArrayList<Cell> firstPath) {
         ArrayList<Cell> secondPath = new ArrayList<>();
 
-        // Create the first 7 cells labeled as -1
+        // Create the first 7 cells labeled as 0
         for (int i = 0; i < 7; i++) {
-            secondPath.add(new Cell(-1));
+            secondPath.add(new Cell(0));
         }
 
         // Copy cells from firstPath with different arrangement
         secondPath.addAll(firstPath.subList(41, 75));
-        secondPath.addAll(firstPath.subList(7, 41));
+        secondPath.addAll(firstPath.subList(7, 42));
 
-        // Add the cell labeled 35 again
-        secondPath.add(secondPath.get(7));
+        // Add same first 7 cells to the end of the path
+        secondPath.addAll(secondPath.subList(0, 7));
 
-        // Create another 7 cells labeled as 0
-        for (int i = 0; i < 7; i++) {
-            secondPath.add(new Cell(0));
-        }
+
+//        // Create another 7 cells labeled as 0
+//        for (int i = 0; i < 7; i++) {
+//            secondPath.add(new Cell(0));
+//        }
 
         return secondPath;
     }
