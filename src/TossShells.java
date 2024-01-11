@@ -4,10 +4,12 @@ public class TossShells {
     private static final int numShells = 6;
     private static final double probabilityOfShellFacingDown = 0.4;
 
+
     public static ArrayList<Integer> tossShells() {
         ArrayList<Integer> stepsList = new ArrayList<>();
         int tossCount = 0;
         int downShellCount;
+
 
         do {
             // tossing
@@ -57,6 +59,7 @@ public class TossShells {
 
     private static int setStepsForShellCount(int downShellCount) {
         int steps;
+
 
         switch (downShellCount) {
             case 0:  // shakka

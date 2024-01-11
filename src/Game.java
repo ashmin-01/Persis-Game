@@ -20,11 +20,11 @@ public class Game {
             if(!validMoves.isEmpty()){
                 // choose a move index
                 int moveIndex = chooseMove(validMoves);
-                Move choosenMove = validMoves.get(moveIndex);
+                Move chosenMove = validMoves.get(moveIndex);
                 // move the pawn
-                board.move(player, choosenMove.getPawn(), choosenMove.getSteps());
+                board.move(player, chosenMove.getPawn(), chosenMove.getSteps());
                 // remove from stepList
-                int stepIndex = choosenMove.getStepIndex();
+                int stepIndex = chosenMove.getStepIndex();
                 stepsList.remove(stepIndex);
             }
             else{
@@ -68,7 +68,10 @@ public class Game {
             // show board
             board.printInfo();
             board.printBoard();
-
+            System.out.println("distance between all pawns and enemy pawns for player 1 is :\n"
+                    + board.distanceBetweenAllPawnsAndEnemyPawns(board.player1));
+            System.out.println("distance between all pawns and private path for player 1 is :\n"
+                    + board.distanceBetweenAllPawnsAndPrivatePath(board.player1));
             // player1
             System.out.println("\nPlayer1 Human Turn");
             humanTurn(board.player1);

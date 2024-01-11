@@ -68,13 +68,4 @@ public class Cell {
         return s;
     }
 
-//    public String toString() {
-//        return "Cell{" +
-//                "label=" + label +
-//                ", isProtected=" + isProtected +
-//                ", pawns=" + pawns +
-//                '}';
-//    }
-
-
 }

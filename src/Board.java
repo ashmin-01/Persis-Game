@@ -109,6 +109,78 @@ public class Board {
 
             System.out.println("You killed enemy pawn(s)!");
     }
+    public boolean isSafe(Player player, Pawn pawn){
+        ArrayList<Cell> path = player.getPath();
+        int index = pawn.getLocationIndex();
+
+        // Ensure index - 13 is a valid index
+        if (index - 13 >= 0 && index - 13 < path.size()) {
+            Cell cell = path.get(index - 13);
+            return !cell.hasPawnsFromDifferentPlayers();
+        } else {
+            return false;
+        }
+    }
+    public int numOfEnemyPawnsInKitchen(Player player){
+        int pawnsInKitchen = 0;
+        Player opponent = player.getOpponent();
+        ArrayList<Pawn> enemyPawns = opponent.getPawns();
+
+        for (Pawn enemy : enemyPawns){
+            if (enemy.getStatus() == Pawn.PawnStatus.IN_KITCHEN)
+                pawnsInKitchen++;
+        }
+        return pawnsInKitchen;
+    }
+    public ArrayList<Integer> distanceBetweenAllPawnsAndPrivatePath(Player player){
+        ArrayList<Integer> distance = new ArrayList<>();
+        ArrayList<Pawn> pawns = player.getPawns();
+        ArrayList<Cell> path = player.getPath();
+        int targetCellIndex = 76;
+
+        for (Pawn pawn : pawns) {
+            Cell pawnCell = pawn.getCell();
+            if (pawn.getStatus() == Pawn.PawnStatus.IN_GAME && path.indexOf(pawnCell) < targetCellIndex) {
+                    int distanceBetweenPawnAndTarget = Math.abs(path.indexOf(pawnCell) - targetCellIndex);
+                    distance.add(distanceBetweenPawnAndTarget);
+            } else if(pawn.getStatus()==Pawn.PawnStatus.OUT_GAME)
+                distance.add(-1);
+            else
+                distance.add(0); // for when pawn is in kitchen or in the private path .
+        }
+
+        return distance;
+    }
+
+    public ArrayList<ArrayList<Integer>> distanceBetweenAllPawnsAndEnemyPawns(Player player) {
+        Player opponent = player.getOpponent();
+        ArrayList<ArrayList<Integer>> allDistances = new ArrayList<>();
+        ArrayList<Pawn> playerPawns = player.getPawns();
+        ArrayList<Pawn> enemyPawns = opponent.getPawns();
+
+        for (Pawn playerPawn : playerPawns) {
+            if (playerPawn.getStatus() == Pawn.PawnStatus.IN_GAME) {
+                ArrayList<Integer> distancesForOnePawn = new ArrayList<>();
+
+                for (Pawn enemyPawn : enemyPawns) {
+                    if (enemyPawn.getStatus() == Pawn.PawnStatus.IN_GAME) {
+                        // Check if the enemy pawn is in front of the player's pawn
+                        if (enemyPawn.getLocationIndex() > playerPawn.getLocationIndex()) {
+                            int distance = Math.abs(playerPawn.getLocationIndex() - enemyPawn.getLocationIndex());
+                            distancesForOnePawn.add(distance);
+                        } else
+                            distancesForOnePawn.add(-1);
+                    }
+                }
+
+                allDistances.add(distancesForOnePawn);
+            }
+        }
+
+        return allDistances;
+    }
+
+
     
     public void printInfo() {
         player1.getPawnsStatus();
