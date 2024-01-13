@@ -67,25 +67,32 @@ public class Game {
     }
 
     private void computerTurn(Player player){
-        Move bestMove = findBestMove(board,true, 3);
-        if (bestMove != null) {
-            board.move(player, bestMove.getPawn(), bestMove.getSteps());
-        } else {
-            System.out.println("No valid moves for the computer.");
+        ArrayList<Integer> stepsList = TossShells.tossShells(board.player2);
+        ArrayList<Pawn> pawns = board.player2.getPawns();
+        while(!stepsList.isEmpty()){
+            Move bestMove = findBestMove(board,true, 3,stepsList,pawns);
+
+            if (bestMove != null) {
+                board.move(player, bestMove.getPawn(), bestMove.getSteps());
+            } else {
+                System.out.println("No valid moves for the computer.");
+                break;
+            }
+            stepsList.remove(bestMove.getSteps() == 0 ? (Object)1 : (Object)bestMove.getSteps());
         }
     }
 
-    Move findBestMove(Board board,boolean isMaxPlayer,int depth){
-        ArrayList<Integer> stepsList = TossShells.tossShells(isMaxPlayer?board.player2:board.player1);
-        ArrayList<Pawn> pawns = isMaxPlayer? board.player2.getPawns():board.player1.getPawns();
+    Move findBestMove(Board board,boolean isMaxPlayer,int depth,ArrayList<Integer>stepsList,ArrayList<Pawn>pawns){
+
         int highScore=Integer.MIN_VALUE;
         Move bestMove=null;
         List<Move>moves=board.getPossibleMoves(stepsList,pawns);
         for (Move move: moves) {
+            Move move1=new Move(move);
             Board newBoard=new Board(board);
-            newBoard.move(isMaxPlayer?board.player2:board.player1,move.getPawn(),move.getSteps());
+            newBoard.move(newBoard.player2,move1.getPawn(),move1.getSteps());
             ArrayList<Integer>newSteps=new ArrayList<>(stepsList);
-            newSteps.remove((Object)move.getSteps());
+            newSteps.remove(move.getSteps() == 0 ? (Object)1 : (Object)move.getSteps());
             int value=bestValue(newBoard,newSteps,depth,isMaxPlayer);
             if(value>=highScore){
                 highScore=value;
@@ -97,57 +104,61 @@ public class Game {
 
     int bestValue(Board board,ArrayList<Integer> toss,int depth,boolean isMaxPlayer){
         if(depth==0||board.isFinished()){
-            return evaluateState(board.player2);
+            return evaluateState(board.player2,board);
         }
         if(toss.isEmpty()||board.getPossibleMoves(toss,isMaxPlayer? board.player2.getPawns():board.player1.getPawns()).isEmpty())
-            return chanceValue(board,toss,depth,isMaxPlayer);
+            return chanceValue(board,depth,isMaxPlayer);
         if(isMaxPlayer)
             return  expectiMax(board, depth, toss, isMaxPlayer);
         return expectiMin(board, depth, toss,isMaxPlayer);
     }
 
-    private int  chanceValue (Board board,ArrayList<Integer> toss,int depth,boolean isMaxPlayer){
+    private int  chanceValue (Board board,int depth,boolean isMaxPlayer){
         List<Double> possibilty;
         int avg = 0;
-//        List<Move> possibleMoves = board.getPossibleMoves(TossShells.tossShells(),board.player1.getPawns());
         for (int i = 0; i < 7; i++)
         {
             possibilty = TossShells.getTossProbability();
             var currentToss=TossShells.getTossSteps(i);
-            int score= bestValue(board,currentToss,depth-1,!isMaxPlayer);
-            avg +=possibilty.get(i) * score;
+            Board newBoard=new Board(board);
+//            newBoard.move(newBoard.player2,newBoard.player2.getPawns().get(0),-1);
+            int score= bestValue(newBoard,currentToss,depth-1,!isMaxPlayer);
+            avg += (int) (possibilty.get(i) * score);
         }
         return avg;
     }
+
     private int expectiMax(Board board,int depth,ArrayList<Integer> toss,boolean isMaxPlayer){
         int maxValue=Integer.MIN_VALUE;
         List<Move> possibleMoves = board.getPossibleMoves(toss,board.player1.getPawns());
         for (Move move : possibleMoves) {
+            Move move1=new Move(move);
             Board newBoard=new Board(board);
-            newBoard.move(isMaxPlayer?board.player2:board.player1,move.getPawn(),move.getSteps());
+            newBoard.move(isMaxPlayer?newBoard.player2:newBoard.player1,move1.getPawn(),move1.getSteps());
             ArrayList<Integer>newSteps=new ArrayList<>(toss);
-            newSteps.remove((Object)move.getSteps());
-            int score = bestValue(newBoard,toss,depth-1,isMaxPlayer);
+            newSteps.remove(move.getSteps() == 0 ? (Object)1 : (Object)move.getSteps());
+            int score = bestValue(newBoard, toss, depth-1,isMaxPlayer);
             maxValue = Math.max(maxValue, score);
         }
         return maxValue;
-
     }
+
     private int expectiMin(Board board,int depth,ArrayList<Integer> toss,boolean isMaxPlayer){
         int minValue=Integer.MAX_VALUE;
         List<Move> possibleMoves = board.getPossibleMoves(toss,board.player1.getPawns());
         for (Move move : possibleMoves) {
+            Move move1=new Move(move);
             Board newBoard=new Board(board);
-            newBoard.move(isMaxPlayer?board.player2:board.player1,move.getPawn(),move.getSteps());
+            newBoard.move(isMaxPlayer?newBoard.player2:newBoard.player1,move1.getPawn(),move1.getSteps());
             ArrayList<Integer>newSteps=new ArrayList<>(toss);
-            newSteps.remove((Object)move.getSteps());
+            newSteps.remove(move.getSteps() == 0 ? (Object)1 : (Object)move.getSteps());
             int score = bestValue(newBoard,toss,depth-1,isMaxPlayer);
             minValue = Math.min(minValue, score);
         }
         return minValue;
-
     }
-    private static int evaluateState(Player player) {
+
+    private static int evaluateState(Player player,Board board) {
         var sum=0;
         var computer_pawns=countPawnsInGame(board.player2)*10+countPawnsInKitchen(board.player2)*50;
         var human_pawns=-(countPawnsInGame(board.player1)*10+countPawnsInKitchen(board.player1)*50);
@@ -158,10 +169,10 @@ public class Game {
             if (board.isSafe(board.player2,player.getPawns().get(i))) {
                 computer_safe+=15;
             }
-            if(player.getPawns().get(i).getCell().isProtected()){
+            if(player.getPawns().get(i).getCell(player).isProtected()){
                 computer_safe+=25;
             }
-            else if(!player.getPawns().get(i).getCell().isProtected()) {
+            else if(!player.getPawns().get(i).getCell(player).isProtected()) {
                 computer_safe -= 25;
             }
         }
@@ -183,10 +194,10 @@ public class Game {
 //                }
 //            }
         }
-        if(player.getType()=="computer"&&board.isWin(player)){
+        if(board.isWin(board.player2)){
             return Integer.MAX_VALUE;
         }
-        else if(player.getType()!="computer"&&!board.isWin(player)){
+        else if(board.isWin(board.player1)){
             return Integer.MIN_VALUE;
         }
         sum=computer_safe+computer_pawns+human_pawns+close_toKitchen+attack_enemy;
@@ -212,7 +223,6 @@ public class Game {
         }
         return count;
     }
-
 
     private void play(){
         while (true) {

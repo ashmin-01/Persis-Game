@@ -5,14 +5,16 @@ public class Pawn {
     private String name;
     private PawnStatus status;
     private int locationIndex;
-    private Player player;
+    private String pawnType;
+//    private Player player;
 
     // Constructor
     public Pawn(int number, String name, PawnStatus status,Player player) {
         this.number = number;
         this.name = name;
         this.status = status;
-        this.player = player;
+        this.pawnType = player.getType();
+//        this.player = player;
     }
 
     // Copy constructor
@@ -21,7 +23,8 @@ public class Pawn {
         this.name = other.name;
         this.status = other.status;
         this.locationIndex = other.locationIndex;
-        this.player = other.player;
+        this.pawnType=other.pawnType;
+//        this.player = other.player;
     }
 
     public enum PawnStatus {
@@ -48,13 +51,15 @@ public class Pawn {
     public void setLocationIndex(int locationIndex){this.locationIndex = locationIndex;}
 
     public int getLocationIndex(){return this.locationIndex;}
-    public Player getPlayer() {
-        return player;
-    }
+//    public Player getPlayer() {
+//        return player;
+//    }
 
-    public Cell getCell() {
+    public String getPawnType(){return this.pawnType;}
+
+    public Cell getCell(Player player) {
         int index = this.getLocationIndex();
-        ArrayList<Cell> path = this.getPlayer().getPath();
+        ArrayList<Cell> path = player.getPath();
         if (index >= 0 && index < path.size()) {
             return path.get(index);
         } else {
@@ -62,9 +67,9 @@ public class Pawn {
         }
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
+//    public void setPlayer(Player player) {
+//        this.player = player;
+//    }
 
 
 }

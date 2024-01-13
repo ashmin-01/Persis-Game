@@ -27,18 +27,20 @@ public class Board {
 
     // deep copy constructor :
     public Board(Board board) {
-        this.player1 = new Player(board.player1.getType());
-        this.player2 = new Player(board.player2.getType());
+        this.player1 = new Player(board.player1);
+        this.player2 = new Player(board.player2);
 
         this.path1 = new ArrayList<>();
         for (Cell cell : board.path1) {
             this.path1.add(new Cell(cell));
         }
+        this.player1.setPath(this.path1);
 
         this.path2 = new ArrayList<>();
         for (Cell cell : board.path2) {
             this.path2.add(new Cell(cell));
         }
+        this.player2.setPath(this.path2);
     }
 
     public boolean isFinished() {
@@ -55,6 +57,7 @@ public class Board {
         }
         return true;
     }
+
     public Board deepCopy(String player1Type, String player2Type) {
         Board copy = new Board(player1Type, player2Type);
         copy.path1 = deepCopyPath(path1);
@@ -91,6 +94,7 @@ public class Board {
         }
         return allMoves;
     }
+
     public ArrayList<Move> getPossibleMoves(ArrayList<Integer>stepsList,ArrayList<Pawn>pawns) {
         return validMoves(stepsList,pawns);
     }
@@ -149,7 +153,7 @@ public class Board {
         {
             System.out.println("Congrats your pawn has entered the kitchen!");
             pawn.setStatus(Pawn.PawnStatus.IN_KITCHEN);
-            Cell cell = pawn.getCell();
+            Cell cell = pawn.getCell(player);
             cell.removePawnFromCell(pawn);
             return;
         }
@@ -176,9 +180,14 @@ public class Board {
 
         return !(nextCell.isProtected() && nextCell.hasEnemyPawn(player));
     }
+
     public boolean canKill(Pawn pawn){
-        Cell currentCell = pawn.getCell();
-        if(!currentCell.isProtected() && currentCell.hasPawnsFromDifferentPlayers()){
+        // this is the pawn player
+        Player enemyPlayer;
+        if(pawn.getPawnType() == "Human")   enemyPlayer = player1;
+        else    enemyPlayer = player2;
+        Cell currentCell = pawn.getCell(enemyPlayer);
+        if(!currentCell.isProtected() && currentCell.hasPawnsFromDifferentPlayers(enemyPlayer)){
             return true;
         }
         return false;
@@ -186,7 +195,7 @@ public class Board {
 
     public void killOpponentPawn(Player player, Pawn pawn) {
         Player opponent = player.getOpponent();
-        Cell currentCell = pawn.getCell();
+        Cell currentCell = pawn.getCell(player);
 
         ArrayList<Pawn> enemyPawns = currentCell.getPlayerPawnsOnCell(opponent);
         for(Pawn pawnToKill : enemyPawns){
@@ -196,18 +205,22 @@ public class Board {
 
         System.out.println("You killed enemy pawn(s)!");
     }
+
     public boolean isSafe(Player player, Pawn pawn){
         ArrayList<Cell> path = player.getPath();
         int index = pawn.getLocationIndex();
 
+        Player enemyPlayer = player.getOpponent();
+
         // Ensure index - 13 is a valid index
         if (index - 13 >= 0 && index - 13 < path.size()) {
             Cell cell = path.get(index - 13);
-            return !cell.hasPawnsFromDifferentPlayers();
+            return !cell.hasPawnsFromDifferentPlayers(enemyPlayer);
         } else {
             return false;
         }
     }
+
     public int numOfEnemyPawnsInKitchen(Player player){
         int pawnsInKitchen = 0;
         Player opponent = player.getOpponent();
@@ -219,6 +232,7 @@ public class Board {
         }
         return pawnsInKitchen;
     }
+
     public ArrayList<Integer> distanceBetweenAllPawnsAndPrivatePath(Player player){
         ArrayList<Integer> distance = new ArrayList<>();
         ArrayList<Pawn> pawns = player.getPawns();
@@ -226,7 +240,7 @@ public class Board {
         int targetCellIndex = 76;
 
         for (Pawn pawn : pawns) {
-            Cell pawnCell = pawn.getCell();
+            Cell pawnCell = pawn.getCell(player);
             if (pawn.getStatus() == Pawn.PawnStatus.IN_GAME && path.indexOf(pawnCell) < targetCellIndex) {
                 int distanceBetweenPawnAndTarget = Math.abs(path.indexOf(pawnCell) - targetCellIndex);
                 distance.add(distanceBetweenPawnAndTarget);
@@ -266,7 +280,6 @@ public class Board {
 
         return allDistances;
     }
-
 
 
     public void printInfo() {

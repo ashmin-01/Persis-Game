@@ -134,7 +134,7 @@ public class Player {
         int newIndex = originalIndex + steps;
         pawn.setLocationIndex(newIndex);
         Cell newCell = path.get(newIndex);
-        newCell.addPawnToCell(pawn,player);
+        newCell.addPawnToCell(pawn,this);
     }
 
 }

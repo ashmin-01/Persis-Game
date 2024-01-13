@@ -4,7 +4,7 @@ public class Cell {
     private int label;
     private boolean isProtected;
     private ArrayList<Pawn> pawns = new ArrayList<>();
-    private ArrayList<Player> players = new ArrayList<>();
+//    private ArrayList<Player> players = new ArrayList<>();
 
     public Cell(int label) {
         this.label = label;
@@ -22,14 +22,14 @@ public class Cell {
             this.pawns.add(new Pawn(pawn));
         }
 
-        this.players = new ArrayList<>(other.players);
+//        this.players = new ArrayList<>(other.players);
     }
     public boolean hasEnemyPawn(Player player){
         Player opponent = player.getOpponent();
         ArrayList<Pawn> cellPawns = this.getPawns();
         for (Pawn pawn : cellPawns)
         {
-            if(pawn.getPlayer() == opponent)
+            if(pawn.getPawnType() == opponent.getType())
                 return true;
         }
 
@@ -47,19 +47,21 @@ public class Cell {
 
     public void addPawnToCell(Pawn pawn, Player player) {
         pawns.add(pawn);
-        if (!players.contains(player)) {
-            players.add(player);
-        }
+//        if (!players.contains(player)) {
+//            players.add(player);
+//        }
     }
 
     public void removePawnFromCell(Pawn pawn) {
         pawns.remove(pawn);
         // Optionally, remove the player from the list if no pawns remain for that player
-        players.removeIf(player -> !pawns.stream().anyMatch(p -> p.getPlayer().equals(player)));
+//        players.removeIf(player -> !pawns.stream().anyMatch(p -> p.getPlayer().equals(player)));
     }
 
-    public boolean hasPawnsFromDifferentPlayers() {
-        return players.size() > 1;
+    public boolean hasPawnsFromDifferentPlayers(Player enemyPlayer) {
+        // check for pawns of this player in ()
+        // if != null then true he has pawns
+        return getPlayerPawnsOnCell(enemyPlayer) != null;
     }
 
     public boolean isProtected() {
@@ -74,7 +76,7 @@ public class Cell {
         ArrayList<Pawn> playerPawnsOnCell = new ArrayList<>();
 
         for (Pawn pawn : pawns) {
-            if (pawn.getPlayer().equals(player)) {
+            if(pawn.getPawnType() == player.getType()) {
                 playerPawnsOnCell.add(pawn);
             }
         }
