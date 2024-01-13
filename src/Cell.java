@@ -10,7 +10,31 @@ public class Cell {
         this.label = label;
         this.isProtected = isLabelProtected(label);
     }
+    // Copy constructor
+// Copy constructor
+    public Cell(Cell other) {
+        this.label = other.label;
+        this.isProtected = other.isProtected;
 
+        // Deep copy of pawns
+        this.pawns = new ArrayList<>();
+        for (Pawn pawn : other.pawns) {
+            this.pawns.add(new Pawn(pawn));
+        }
+
+        this.players = new ArrayList<>(other.players);
+    }
+    public boolean hasEnemyPawn(Player player){
+        Player opponent = player.getOpponent();
+        ArrayList<Pawn> cellPawns = this.getPawns();
+        for (Pawn pawn : cellPawns)
+        {
+            if(pawn.getPlayer() == opponent)
+                return true;
+        }
+
+        return false;
+    }
     private boolean isLabelProtected(int label) {
         int[] protectedLabels = {32, 38, 21, 15, 66, 4, 49, 55};
         for (int protectedLabel : protectedLabels) {

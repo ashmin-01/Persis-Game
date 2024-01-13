@@ -28,7 +28,28 @@ public class Player {
         }
     }
 
-     public void setPath(ArrayList<Cell> path){
+    // Copy constructor
+    public Player(Player other) {
+        this.type = other.type;
+        this.numOfPawns = other.numOfPawns;
+
+        // Deep copy of the pawns
+        this.pawns = new ArrayList<>();
+        for (Pawn pawn : other.pawns) {
+            this.pawns.add(new Pawn(pawn));
+        }
+
+        // Deep copy of the path
+        this.path = new ArrayList<>();
+        for (Cell cell : other.path) {
+            this.path.add(new Cell(cell));
+        }
+
+        // Set opponent
+        this.setOpponent(other.opponent);
+    }
+
+    public void setPath(ArrayList<Cell> path){
         this.path = path;
     }
 
@@ -66,6 +87,25 @@ public class Player {
             System.out.println(pawn.getName() + " in cell: " + pawn.getLocationIndex());
         }
     }
+    public Player deepCopy(ArrayList<Cell> newPath) {
+        return new Player(this, newPath);
+    }
+
+    public Player(Player other, ArrayList<Cell> newPath) {
+        this.type = other.type;
+        this.numOfPawns = other.numOfPawns;
+        this.path = newPath;
+        this.opponent = other.opponent;
+        this.pawns = deepCopyPawns(other.pawns, this);
+    }
+    private ArrayList<Pawn> deepCopyPawns(ArrayList<Pawn> pawns, Player player) {
+        ArrayList<Pawn> copy = new ArrayList<>();
+        for (Pawn pawn : pawns) {
+            copy.add(new Pawn(pawn.getNumber(), pawn.getName(), pawn.getStatus(), player));
+        }
+        return copy;
+    }
+
 
     public ArrayList<Pawn> getPawns(){
         return pawns;
@@ -77,6 +117,10 @@ public class Player {
 
     public Player getOpponent() {
         return opponent;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public void addPawnToPath(int steps, Pawn pawn, Player player){

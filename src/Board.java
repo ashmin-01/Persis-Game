@@ -7,6 +7,7 @@ public class Board {
     ArrayList<Cell> path1, path2;
 
 
+
     public Board(String player1Type, String player2Type){
         // Create players
         this.player1 = new Player(player1Type);
@@ -24,6 +25,22 @@ public class Board {
         player2.setPath(path2);
     }
 
+    // deep copy constructor :
+    public Board(Board board) {
+        this.player1 = new Player(board.player1.getType());
+        this.player2 = new Player(board.player2.getType());
+
+        this.path1 = new ArrayList<>();
+        for (Cell cell : board.path1) {
+            this.path1.add(new Cell(cell));
+        }
+
+        this.path2 = new ArrayList<>();
+        for (Cell cell : board.path2) {
+            this.path2.add(new Cell(cell));
+        }
+    }
+
     public boolean isFinished() {
         return isWin(player1) | isWin(player2);
     }
@@ -37,6 +54,22 @@ public class Board {
             }
         }
         return true;
+    }
+    public Board deepCopy(String player1Type, String player2Type) {
+        Board copy = new Board(player1Type, player2Type);
+        copy.path1 = deepCopyPath(path1);
+        copy.path2 = deepCopyPath(path2);
+        copy.player1 = player1.deepCopy(copy.path1);
+        copy.player2 = player2.deepCopy(copy.path2);
+        return copy;
+    }
+
+    private ArrayList<Cell> deepCopyPath(ArrayList<Cell> path) {
+        ArrayList<Cell> copy = new ArrayList<>();
+        for (Cell cell : path) {
+            copy.add(new Cell(cell)); // Assuming you have a copy constructor in Cell class
+        }
+        return copy;
     }
 
     public ArrayList<Move> validMoves(ArrayList<Integer> stepsList, ArrayList<Pawn> pawns){
@@ -58,6 +91,52 @@ public class Board {
         }
         return allMoves;
     }
+    public ArrayList<Move> getPossibleMoves(ArrayList<Integer>stepsList,ArrayList<Pawn>pawns) {
+        return validMoves(stepsList,pawns);
+    }
+
+//    public List<Board> getNextState(Player currentPlayer, Board currentBoard) {
+//        List<Move> possibleMoves = currentBoard.getPossibleMoves();
+//        List<Board> nextStates = new ArrayList<>();
+//
+//        for (Move move : possibleMoves) {
+//            Board copiedBoard = currentBoard.deepCopy(currentPlayer.getType(), currentPlayer.getOpponent().getType());
+//            copiedBoard.move(currentPlayer, move.getPawn(), move.getSteps());
+//            nextStates.add(copiedBoard);
+//        }
+//
+//        return nextStates;
+//    }
+
+//    public void move(Player player, Pawn pawn, int steps) {
+//
+//        // Check if the player toss result is bigger than the remaining spots
+//        int remainingSpots = player.getPath().size() - pawn.getLocationIndex();
+//        if (steps > remainingSpots) {
+//            System.out.println("Cannot move. Skip till next turn.");
+//            return;
+//        } else if (steps == remainingSpots)
+//        {
+//            System.out.println("Congrats your pawn has entered the kitchen!");
+//            pawn.setStatus(Pawn.PawnStatus.IN_KITCHEN);
+//            Cell cell = pawn.getCell();
+//            cell.removePawnFromCell(pawn);
+//            return;
+//        }
+//        // check for Khal
+//        if (steps == 0 && pawn.getStatus() == Pawn.PawnStatus.OUT_GAME) {
+//            pawn.setStatus(Pawn.PawnStatus.IN_GAME);
+//            pawn.setLocationIndex(0);
+//            player.addPawnToPath(0, pawn, player);
+//        } else {
+//            player.addPawnToPath(steps, pawn, player);
+//
+//            // after moving the pawn to the new location, check if it can kill an opponent's pawn
+//            if (canKill(pawn)) {
+//                killOpponentPawn(player, pawn);
+//            }
+//        }
+//    }
 
     public void move(Player player, Pawn pawn, int steps) {
 
@@ -89,11 +168,19 @@ public class Board {
         }
     }
 
+    public boolean canMove(Player player ,Pawn pawn, int steps){
+        int currentIndex = pawn.getLocationIndex();
+        int nextIndex = currentIndex + steps;
+        ArrayList<Cell> path = player.getPath();
+        Cell nextCell = path.get(nextIndex);
+
+        return !(nextCell.isProtected() && nextCell.hasEnemyPawn(player));
+    }
     public boolean canKill(Pawn pawn){
         Cell currentCell = pawn.getCell();
-         if(!currentCell.isProtected() && currentCell.hasPawnsFromDifferentPlayers()){
-             return true;
-         }
+        if(!currentCell.isProtected() && currentCell.hasPawnsFromDifferentPlayers()){
+            return true;
+        }
         return false;
     }
 
@@ -107,7 +194,7 @@ public class Board {
             pawnToKill.setStatus(Pawn.PawnStatus.OUT_GAME);
         }
 
-            System.out.println("You killed enemy pawn(s)!");
+        System.out.println("You killed enemy pawn(s)!");
     }
     public boolean isSafe(Player player, Pawn pawn){
         ArrayList<Cell> path = player.getPath();
@@ -141,8 +228,8 @@ public class Board {
         for (Pawn pawn : pawns) {
             Cell pawnCell = pawn.getCell();
             if (pawn.getStatus() == Pawn.PawnStatus.IN_GAME && path.indexOf(pawnCell) < targetCellIndex) {
-                    int distanceBetweenPawnAndTarget = Math.abs(path.indexOf(pawnCell) - targetCellIndex);
-                    distance.add(distanceBetweenPawnAndTarget);
+                int distanceBetweenPawnAndTarget = Math.abs(path.indexOf(pawnCell) - targetCellIndex);
+                distance.add(distanceBetweenPawnAndTarget);
             } else if(pawn.getStatus()==Pawn.PawnStatus.OUT_GAME)
                 distance.add(-1);
             else
@@ -181,7 +268,7 @@ public class Board {
     }
 
 
-    
+
     public void printInfo() {
         player1.getPawnsStatus();
         player2.getPawnsStatus();

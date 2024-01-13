@@ -15,6 +15,15 @@ public class Pawn {
         this.player = player;
     }
 
+    // Copy constructor
+    public Pawn(Pawn other) {
+        this.number = other.number;
+        this.name = other.name;
+        this.status = other.status;
+        this.locationIndex = other.locationIndex;
+        this.player = other.player;
+    }
+
     public enum PawnStatus {
         IN_GAME,
         OUT_GAME,

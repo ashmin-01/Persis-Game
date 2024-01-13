@@ -10,6 +10,13 @@ public class Move {
         this.stepIndex = stepIndex;
     }
 
+    // Copy constructor
+    public Move(Move other) {
+        this.pawn = new Pawn(other.pawn);  // Assuming Pawn has a copy constructor
+        this.steps = other.steps;
+        this.stepIndex = other.stepIndex;
+    }
+
     @Override
     public String toString() {
         if(steps == 0)

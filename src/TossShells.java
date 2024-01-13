@@ -3,9 +3,9 @@ import java.util.*;
 public class TossShells {
     private static final int numShells = 6;
     private static final double probabilityOfShellFacingDown = 0.4;
+    private static final  List<Double> tossProbability= new ArrayList<>(List.of(0.004,0.037,0.311,0.276,0.138,0.187,0.047 ));
 
-
-    public static ArrayList<Integer> tossShells() {
+    public static ArrayList<Integer> tossShells(Player player) {
         ArrayList<Integer> stepsList = new ArrayList<>();
         int tossCount = 0;
         int downShellCount;
@@ -15,7 +15,10 @@ public class TossShells {
             // tossing
             List<TossOutcome> outcomes = generateOutcomes();
             downShellCount = countShellsFacingDown(outcomes);
+//            if(player.getType()=="human"){
             System.out.println("Down shell count: " + downShellCount);
+//            }
+
 
             // check for khal
             if(downShellCount == 1 || downShellCount == 5)
@@ -89,7 +92,44 @@ public class TossShells {
         }
         return steps;
     }
+    public static ArrayList<Integer> getTossSteps(int downShellCount) {
+        ArrayList<Integer> steps = new ArrayList<>();
 
+
+        switch (downShellCount) {
+            case 0:  // shakka
+                steps.add(6);
+                break;
+            case 1: // dust
+                steps.add(10);
+                steps.add(1);
+                break;
+            case 2:
+                steps.add(2);
+                break;
+            case 3:
+                steps.add(3);
+                break;
+            case 4:
+                steps.add(4);
+                break;
+            case 5: // banj
+                steps.add(25);
+                steps.add(1);
+                break;
+            case 6:  // bara
+                steps.add(12);
+                break;
+            default:
+                // Handle any unexpected values of shellCount
+                throw new IllegalArgumentException("Invalid shell count: " + downShellCount);
+        }
+        return steps;
+    }
+
+    public final static List<Double> getTossProbability() {
+        return tossProbability;
+    }
 
     // Enum for improved readability
     private enum TossOutcome {
