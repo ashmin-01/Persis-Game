@@ -3,7 +3,7 @@ import java.util.*;
 public class Player {
     private final String type;
     private int numOfPawns = 4;
-    private ArrayList<Pawn> pawns;
+    private final ArrayList<Pawn> pawns;
     private ArrayList<Cell> path = new ArrayList<>();
     private Player opponent;
 
@@ -65,16 +65,12 @@ public class Player {
 
         for (Pawn pawn : pawns) {
             switch (pawn.getStatus()) {
-                case IN_GAME:
+                case IN_GAME -> {
                     inGame.add(pawn.getName());
                     inGamePawns.add(pawn);
-                    break;
-                case OUT_GAME:
-                    outGame.add(pawn.getName());
-                    break;
-                case IN_KITCHEN:
-                    inKitchen.add(pawn.getName());
-                    break;
+                }
+                case OUT_GAME -> outGame.add(pawn.getName());
+                case IN_KITCHEN -> inKitchen.add(pawn.getName());
             }
         }
 
@@ -122,8 +118,8 @@ public class Player {
     public String getType() {
         return type;
     }
-
-    public void addPawnToPath(int steps, Pawn pawn, Player player){
+    // safe deleted player parameter
+    public void addPawnToPath(int steps, Pawn pawn){
 
         // Get original location and remove it from it
         int originalIndex = pawn.getLocationIndex();
@@ -134,7 +130,7 @@ public class Player {
         int newIndex = originalIndex + steps;
         pawn.setLocationIndex(newIndex);
         Cell newCell = path.get(newIndex);
-        newCell.addPawnToCell(pawn,this);
+        newCell.addPawnToCell(pawn);
     }
 
 }

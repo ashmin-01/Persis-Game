@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class Game {
@@ -18,7 +17,7 @@ public class Game {
 
     private void humanTurn(Player player){
         // Tossing
-        ArrayList<Integer> stepsList = TossShells.tossShells(player);
+        ArrayList<Integer> stepsList = TossShells.tossShells();
         ArrayList<Pawn> pawns = player.getPawns();
 
         while (!stepsList.isEmpty()) {
@@ -67,7 +66,7 @@ public class Game {
     }
 
     private void computerTurn(Player player){
-        ArrayList<Integer> stepsList = TossShells.tossShells(board.player2);
+        ArrayList<Integer> stepsList = TossShells.tossShells();
         ArrayList<Pawn> pawns = board.player2.getPawns();
         while(!stepsList.isEmpty()){
             Move bestMove = findBestMove(board,true, 3,stepsList,pawns);

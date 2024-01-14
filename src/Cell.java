@@ -1,8 +1,9 @@
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Cell {
-    private int label;
-    private boolean isProtected;
+    private final int label;
+    private final boolean isProtected;
     private ArrayList<Pawn> pawns = new ArrayList<>();
 //    private ArrayList<Player> players = new ArrayList<>();
 
@@ -10,8 +11,8 @@ public class Cell {
         this.label = label;
         this.isProtected = isLabelProtected(label);
     }
+
     // Copy constructor
-// Copy constructor
     public Cell(Cell other) {
         this.label = other.label;
         this.isProtected = other.isProtected;
@@ -22,14 +23,13 @@ public class Cell {
             this.pawns.add(new Pawn(pawn));
         }
 
-//        this.players = new ArrayList<>(other.players);
     }
     public boolean hasEnemyPawn(Player player){
         Player opponent = player.getOpponent();
         ArrayList<Pawn> cellPawns = this.getPawns();
         for (Pawn pawn : cellPawns)
         {
-            if(pawn.getPawnType() == opponent.getType())
+            if(Objects.equals(pawn.getPawnType(), opponent.getType()))
                 return true;
         }
 
@@ -45,22 +45,15 @@ public class Cell {
         return false;
     }
 
-    public void addPawnToCell(Pawn pawn, Player player) {
+    public void addPawnToCell(Pawn pawn) {
         pawns.add(pawn);
-//        if (!players.contains(player)) {
-//            players.add(player);
-//        }
     }
 
     public void removePawnFromCell(Pawn pawn) {
         pawns.remove(pawn);
-        // Optionally, remove the player from the list if no pawns remain for that player
-//        players.removeIf(player -> !pawns.stream().anyMatch(p -> p.getPlayer().equals(player)));
     }
 
     public boolean hasPawnsFromDifferentPlayers(Player enemyPlayer) {
-        // check for pawns of this player in ()
-        // if != null then true he has pawns
         return getPlayerPawnsOnCell(enemyPlayer) != null;
     }
 
@@ -76,7 +69,7 @@ public class Cell {
         ArrayList<Pawn> playerPawnsOnCell = new ArrayList<>();
 
         for (Pawn pawn : pawns) {
-            if(pawn.getPawnType() == player.getType()) {
+            if(Objects.equals(pawn.getPawnType(), player.getType())) {
                 playerPawnsOnCell.add(pawn);
             }
         }
@@ -84,14 +77,15 @@ public class Cell {
         return playerPawnsOnCell;
     }
 
+    // used append instead of +=
     @Override
     public String toString(){
-        String s = "[";
+        StringBuilder s = new StringBuilder("[");
         for (Pawn pawn : pawns){
-            s += pawn.getName();
+            s.append(pawn.getName());
         }
-        s += "]";
-        return s;
+        s.append("]");
+        return s.toString();
     }
 
 }

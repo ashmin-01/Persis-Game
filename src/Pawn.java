@@ -1,12 +1,12 @@
 import java.util.ArrayList;
 
 public class Pawn {
-    private int number;
-    private String name;
+    private final int number;
+    private final String name;
     private PawnStatus status;
     private int locationIndex;
-    private String pawnType;
-//    private Player player;
+    private final String pawnType;
+
 
     // Constructor
     public Pawn(int number, String name, PawnStatus status,Player player) {
@@ -14,7 +14,7 @@ public class Pawn {
         this.name = name;
         this.status = status;
         this.pawnType = player.getType();
-//        this.player = player;
+
     }
 
     // Copy constructor
@@ -24,7 +24,7 @@ public class Pawn {
         this.status = other.status;
         this.locationIndex = other.locationIndex;
         this.pawnType=other.pawnType;
-//        this.player = other.player;
+
     }
 
     public enum PawnStatus {
@@ -51,9 +51,7 @@ public class Pawn {
     public void setLocationIndex(int locationIndex){this.locationIndex = locationIndex;}
 
     public int getLocationIndex(){return this.locationIndex;}
-//    public Player getPlayer() {
-//        return player;
-//    }
+
 
     public String getPawnType(){return this.pawnType;}
 
@@ -66,10 +64,6 @@ public class Pawn {
             throw new IndexOutOfBoundsException("Invalid location index: " + index);
         }
     }
-
-//    public void setPlayer(Player player) {
-//        this.player = player;
-//    }
 
 
 }

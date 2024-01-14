@@ -1,7 +1,8 @@
+import java.util.*;
 public class Move {
-    private Pawn pawn;
-    private int steps;
-    private int stepIndex;
+    private final Pawn pawn;
+    private final int steps;
+    private final int stepIndex;
 
     // 0 steps for khal
     public Move(Pawn pawn, int steps, int stepIndex){
@@ -23,6 +24,19 @@ public class Move {
             return "add " + pawn.getName() + " to board";
         return steps +  " steps for " + pawn.getName();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if(o == null || getClass() != o.getClass()) return false;
+        Move move = (Move) o;
+        return steps == move.steps && stepIndex == move.stepIndex && Objects.equals(pawn, move.pawn);
+    }
+
+    @Override
+    public int hashCode() {
+         return Objects.hash(pawn, steps, stepIndex);
+        }
 
     public int getSteps()   {return this.steps;}
 

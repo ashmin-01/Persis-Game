@@ -5,7 +5,8 @@ public class TossShells {
     private static final double probabilityOfShellFacingDown = 0.4;
     private static final  List<Double> tossProbability= new ArrayList<>(List.of(0.004,0.037,0.311,0.276,0.138,0.187,0.047 ));
 
-    public static ArrayList<Integer> tossShells(Player player) {
+    // safe deleted player parameter
+    public static ArrayList<Integer> tossShells() {
         ArrayList<Integer> stepsList = new ArrayList<>();
         int tossCount = 0;
         int downShellCount;
@@ -15,9 +16,8 @@ public class TossShells {
             // tossing
             List<TossOutcome> outcomes = generateOutcomes();
             downShellCount = countShellsFacingDown(outcomes);
-//            if(player.getType()=="human"){
             System.out.println("Down shell count: " + downShellCount);
-//            }
+
 
 
             // check for khal
@@ -59,75 +59,54 @@ public class TossShells {
 
         return outcomes;
     }
-
+    // used enhanced switch statement
     private static int setStepsForShellCount(int downShellCount) {
-        int steps;
 
-
-        switch (downShellCount) {
-            case 0:  // shakka
-                steps = 6;
-                break;
-            case 1: // dust
-                steps = 10;
-                break;
-            case 2:
-                steps = 2;
-                break;
-            case 3:
-                steps = 3;
-                break;
-            case 4:
-                steps = 4;
-                break;
-            case 5: // banj
-                steps = 25;
-                break;
-            case 6:  // bara
-                steps = 12;
-                break;
-            default:
-                // Handle any unexpected values of shellCount
-                throw new IllegalArgumentException("Invalid shell count: " + downShellCount);
-        }
-        return steps;
+        return switch (downShellCount) {
+            case 0 ->  // shakka
+                    6;
+            case 1 -> // dust
+                    10;
+            case 2 -> 2;
+            case 3 -> 3;
+            case 4 -> 4;
+            case 5 -> // banj
+                    25;
+            case 6 ->  // bara
+                    12;
+            default ->
+                    // Handle any unexpected values of shellCount
+                    throw new IllegalArgumentException("Invalid shell count: " + downShellCount);
+        };
     }
     public static ArrayList<Integer> getTossSteps(int downShellCount) {
         ArrayList<Integer> steps = new ArrayList<>();
 
 
         switch (downShellCount) {
-            case 0:  // shakka
-                steps.add(6);
-                break;
-            case 1: // dust
+            case 0 ->  // shakka
+                    steps.add(6);
+            case 1 -> { // dust
                 steps.add(10);
                 steps.add(1);
-                break;
-            case 2:
-                steps.add(2);
-                break;
-            case 3:
-                steps.add(3);
-                break;
-            case 4:
-                steps.add(4);
-                break;
-            case 5: // banj
+            }
+            case 2 -> steps.add(2);
+            case 3 -> steps.add(3);
+            case 4 -> steps.add(4);
+            case 5 -> { // banj
                 steps.add(25);
                 steps.add(1);
-                break;
-            case 6:  // bara
-                steps.add(12);
-                break;
-            default:
-                // Handle any unexpected values of shellCount
-                throw new IllegalArgumentException("Invalid shell count: " + downShellCount);
+            }
+            case 6 ->  // bara
+                    steps.add(12);
+            default ->
+                    // Handle any unexpected values of shellCount
+                    throw new IllegalArgumentException("Invalid shell count: " + downShellCount);
         }
         return steps;
     }
-
-    public final static List<Double> getTossProbability() {
+    // removed final modifier
+    public static List<Double> getTossProbability() {
         return tossProbability;
     }
 
