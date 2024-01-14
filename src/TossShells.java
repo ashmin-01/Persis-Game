@@ -5,7 +5,7 @@ public class TossShells {
     private static final double probabilityOfShellFacingDown = 0.4;
     private static final  List<Double> tossProbability= new ArrayList<>(List.of(0.004,0.037,0.311,0.276,0.138,0.187,0.047 ));
 
-    // safe deleted player parameter
+
     public static ArrayList<Integer> tossShells() {
         ArrayList<Integer> stepsList = new ArrayList<>();
         int tossCount = 0;
@@ -105,7 +105,7 @@ public class TossShells {
         }
         return steps;
     }
-    // removed final modifier
+
     public static List<Double> getTossProbability() {
         return tossProbability;
     }

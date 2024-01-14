@@ -1,11 +1,10 @@
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.*;
 
 public class Cell {
     private final int label;
     private final boolean isProtected;
     private ArrayList<Pawn> pawns = new ArrayList<>();
-//    private ArrayList<Player> players = new ArrayList<>();
+
 
     public Cell(int label) {
         this.label = label;
@@ -77,7 +76,6 @@ public class Cell {
         return playerPawnsOnCell;
     }
 
-    // used append instead of +=
     @Override
     public String toString(){
         StringBuilder s = new StringBuilder("[");

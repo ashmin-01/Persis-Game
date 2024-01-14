@@ -102,17 +102,17 @@ public class Board {
 
         // Check if the player's next cell is protected and has an opponent's pawn in it
         if (!canMove(player, pawn, steps)){
-            System.out.println("Cannot move, enemy pawn in protected cell ahead.");
+//            System.out.println("Cannot move, enemy pawn in protected cell ahead.");
             return;
         }
         // Check if the player toss result is bigger than the remaining spots
         int remainingSpots = player.getPath().size() - pawn.getLocationIndex();
         if (steps > remainingSpots) {
-            System.out.println("Cannot move, Skip till next turn.");
+//            System.out.println("Cannot move, Skip till next turn.");
             return;
         } else if (steps == remainingSpots)
         {
-            System.out.println("Congrats your pawn has entered the kitchen!");
+//            System.out.println("Congrats your pawn has entered the kitchen!");
             pawn.setStatus(Pawn.PawnStatus.IN_KITCHEN);
             Cell cell = pawn.getCell(player);
             cell.removePawnFromCell(pawn);
@@ -168,7 +168,7 @@ public class Board {
             pawnToKill.setStatus(Pawn.PawnStatus.OUT_GAME);
         }
 
-        System.out.println("You killed enemy pawn(s)!");
+//        System.out.println("You killed enemy pawn(s)!");
     }
 
     public boolean isSafe(Player player, Pawn pawn){
@@ -184,18 +184,6 @@ public class Board {
         } else {
             return false;
         }
-    }
-
-    public int numOfEnemyPawnsInKitchen(Player player){
-        int pawnsInKitchen = 0;
-        Player opponent = player.getOpponent();
-        ArrayList<Pawn> enemyPawns = opponent.getPawns();
-
-        for (Pawn enemy : enemyPawns){
-            if (enemy.getStatus() == Pawn.PawnStatus.IN_KITCHEN)
-                pawnsInKitchen++;
-        }
-        return pawnsInKitchen;
     }
 
     public ArrayList<Integer> distanceBetweenAllPawnsAndPrivatePath(Player player){

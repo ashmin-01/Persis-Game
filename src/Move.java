@@ -30,13 +30,13 @@ public class Move {
         if (this == o) return true;
         if(o == null || getClass() != o.getClass()) return false;
         Move move = (Move) o;
-        return steps == move.steps && stepIndex == move.stepIndex && Objects.equals(pawn, move.pawn);
+        return steps == move.steps && Objects.equals(pawn, move.pawn);
     }
 
     @Override
     public int hashCode() {
-         return Objects.hash(pawn, steps, stepIndex);
-        }
+        return Objects.hash(pawn, steps, stepIndex);
+    }
 
     public int getSteps()   {return this.steps;}
 
